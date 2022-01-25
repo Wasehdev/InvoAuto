@@ -1,4 +1,7 @@
 const express = require("express");
+const client = require("./connection.js");
+
+client.connect();
 
 const { Sequelize } = require("sequelize");
 const app = express();
@@ -23,17 +26,46 @@ async function checkConnection() {
     console.error("Unable to connect to the database:", error);
   }
 }
+//checkConnection();
 
-checkConnection();
+app.get("/users", (req, res) => {
+  client.query(`Select * from users`, (err, result) => {
+    if (!err) {
+      res.send(result.rows);
+    }
+  });
+  client.end;
+});
 
-app.get("/", (req, res) => {
-  res.send("This is home page.");
+app.get("/users/:name", (req, res) => {
+  client.query(
+    "Select * from users where name= $1",
+    [req.params.name],
+    (err, result) => {
+      if (!err) {
+        res.send(result.rows);
+      } else res.send(err);
+    }
+  );
+  client.end;
 });
 
 app.post("/", (req, res) => {
   let body = req.body;
   console.log(body);
   res.send("success");
+});
+
+app.post("/users", (req, res) => {
+  const user = req.body;
+  client
+    .query(
+      `INSERT INTO "users" ("name", "email")  
+  VALUES ($1, $2)`,
+      ["hasan", "raheem"]
+    )
+    .then(res.send("Insertion was successful"));
+  client.end;
 });
 
 app.listen(PORT, () => {
