@@ -12,7 +12,7 @@ app.use(express.json());
 const PORT = 3000;
 
 async function checkConnection() {
-  const sequelize = new Sequelize("invoauto", "postgres", "waseh8348", {
+  const sequelize = new Sequelize("automation", "postgres", "alliswell", {
     host: "localhost",
     dialect: "postgres",
   });
