@@ -15,7 +15,7 @@ app.use(express.json());
 const PORT = 3000;
 
 async function checkConnection() {
-  const sequelize = new Sequelize("invoauto", "postgres", "waseh8348", {
+  const sequelize = new Sequelize("postgres", "postgres", "waseh8348", {
     host: "localhost",
     dialect: "postgres",
   });
@@ -32,6 +32,8 @@ app.get("/users", (req, res) => {
   client.query(`Select * from users`, (err, result) => {
     if (!err) {
       res.send(result.rows);
+    } else {
+      res.send(err);
     }
   });
   client.end;
@@ -62,9 +64,26 @@ app.post("/users", (req, res) => {
     .query(
       `INSERT INTO "users" ("name", "email")  
   VALUES ($1, $2)`,
-      ["hasan", "raheem"]
+      [user.name, user.email]
     )
     .then(res.send("Insertion was successful"));
+  client.end;
+});
+
+app.put("/users/:id", (req, res) => {
+  let user = req.body;
+
+  client.query(
+    `update users set email = $1 where name = $2`,
+    [user.email, user.name],
+    (err, result) => {
+      if (!err) {
+        res.send("Update was successful");
+      } else {
+        res.send(err);
+      }
+    }
+  );
   client.end;
 });
 
