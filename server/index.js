@@ -5,11 +5,11 @@ client.connect();
 
 const { Sequelize } = require("sequelize");
 const app = express();
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
+// app.use(
+//   express.urlencoded({
+//     extended: true,
+//   })
+// );
 
 app.use(express.json());
 const PORT = 3000;
@@ -54,15 +54,16 @@ app.get("/users/:name", (req, res) => {
 
 app.post("/", (req, res) => {
   let body = req.body;
-  console.log(body);
-  res.send("success");
+  let name = body.name;
+  console.log(name);
 });
 
 app.post("/users", (req, res) => {
   const user = req.body;
+  console.log(user);
   client
     .query(
-      `INSERT INTO "users" ("name", "email")  
+      `INSERT INTO "users" ("name", "email")
   VALUES ($1, $2)`,
       [user.name, user.email]
     )
