@@ -20,9 +20,7 @@ module.exports = {
       estimated_hours: {
         type: Sequelize.FLOAT,
       },
-      invoice_id: {
-        type: Sequelize.INTEGER,
-      },
+
       createdAt: {
         allowNull: true,
         type: Sequelize.DATE,

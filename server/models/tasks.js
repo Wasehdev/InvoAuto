@@ -17,12 +17,27 @@ module.exports = (sequelize, DataTypes) => {
       description: DataTypes.TEXT,
       actual_hours: DataTypes.FLOAT,
       estimated_hours: DataTypes.FLOAT,
-      invoice_id: DataTypes.INTEGER,
     },
     {
       sequelize,
       modelName: "tasks",
     }
   );
+  tasks.associate = (models) => {
+    tasks.hasMany(models.labels, {
+      foreignKey: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+    });
+    tasks.belongsTo(models.invoices);
+    tasks.hasMany(models.attachments, {
+      foreignKey: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+    });
+    tasks.belongsToMany(models.members, { through: "membersdata" });
+  };
   return tasks;
 };

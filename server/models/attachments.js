@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class attachments extends Model {
     /**
@@ -13,12 +11,16 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  attachments.init({
-    attachments: DataTypes.BLOB,
-    task_id: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'attachments',
-  });
+  attachments.init(
+    {
+      attachments: DataTypes.BLOB,
+      task_id: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: "attachments",
+    }
+  );
+  attachments.belongsTo(models.tasks);
   return attachments;
 };
