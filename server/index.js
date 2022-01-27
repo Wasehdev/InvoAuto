@@ -5,11 +5,11 @@ client.connect();
 
 const { Sequelize } = require("sequelize");
 const app = express();
-// app.use(
-//   express.urlencoded({
-//     extended: true,
-//   })
-// );
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 app.use(express.json());
 const PORT = 3000;
@@ -58,33 +58,49 @@ app.post("/", (req, res) => {
   console.log(name);
 });
 
-app.post("/users", (req, res) => {
+app.post("/users", (req) => {
+  let id = "";
   const user = req.body;
+  let label = user.labels;
+  label = label.replace(/\s/g, "");
+  let labelsArr = label.split(",");
   console.log(user);
-  client
-    .query(
-      `INSERT INTO "users" ("name", "email")
-  VALUES ($1, $2)`,
-      [user.name, user.email]
-    )
-    .then(res.send("Insertion was successful"));
+  let result = client.query(
+    `INSERT into users (name ,email) values ($1,$2) RETURNING id;`,
+    [user.name, user.email]
+  );
+  result.then((response) => {
+    id = response.rows[0].id;
+    for (let i = 0; i < labelsArr.length; i++) {
+      client.query(`INSERT into labels (title , usersid) values ($1,$2);`, [
+        labelsArr[i],
+        id,
+      ]);
+    }
+  });
   client.end;
 });
 
 app.put("/users/:id", (req, res) => {
-  let user = req.body;
-
-  client.query(
-    `update users set email = $1 where name = $2`,
-    [user.email, user.name],
-    (err, result) => {
-      if (!err) {
-        res.send("Update was successful");
-      } else {
-        res.send(err);
-      }
-    }
+  let id = "";
+  const user = req.body;
+  let label = user.labels;
+  label = label.replace(/\s/g, "");
+  let labelsArr = label.split(",");
+  console.log(user);
+  let result = client.query(
+    `update users set name = $1, email= $2 where id = $3`,
+    [user.name, user.email, user.id]
   );
+  result.then((response) => {
+    id = user.id;
+    for (let i = 0; i < labelsArr.length; i++) {
+      client.query(`update labels set title=$1 , usersid=$2 where usersid=$ `, [
+        labelsArr[i],
+        id,
+      ]);
+    }
+  });
   client.end;
 });
 
