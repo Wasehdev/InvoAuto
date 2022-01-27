@@ -8,25 +8,24 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      title: {
-        type: Sequelize.STRING,
-      },
       description: {
         type: Sequelize.TEXT,
       },
+      task_name: {
+        type: Sequelize.STRING,
+      },
       actual_hours: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.DOUBLE,
       },
       estimated_hours: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.DOUBLE,
       },
-
       createdAt: {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.DATE,
       },
       updatedAt: {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.DATE,
       },
     });

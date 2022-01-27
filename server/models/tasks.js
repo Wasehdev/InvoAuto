@@ -13,16 +13,17 @@ module.exports = (sequelize, DataTypes) => {
   }
   tasks.init(
     {
-      title: DataTypes.STRING,
       description: DataTypes.TEXT,
-      actual_hours: DataTypes.FLOAT,
-      estimated_hours: DataTypes.FLOAT,
+      task_name: DataTypes.STRING,
+      actual_hours: DataTypes.DOUBLE,
+      estimated_hours: DataTypes.DOUBLE,
     },
     {
       sequelize,
       modelName: "tasks",
     }
   );
+
   tasks.associate = (models) => {
     tasks.hasMany(models.labels, {
       foreignKey: {
@@ -39,5 +40,6 @@ module.exports = (sequelize, DataTypes) => {
     });
     tasks.belongsToMany(models.members, { through: "membersdata" });
   };
+
   return tasks;
 };

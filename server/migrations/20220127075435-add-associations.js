@@ -4,7 +4,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     //tasks has many labels
     return queryInterface
-      .addColumn("labels", "_Tasksid", {
+      .addColumn("labels", "tasksid", {
         type: Sequelize.INTEGER,
         references: {
           model: "tasks",
@@ -34,7 +34,7 @@ module.exports = {
         // tasks hasMany attachments
         return queryInterface.addColumn(
           "attachments", // name of Target model
-          "_Tasksid", // name of the key we're adding
+          "tasksid", // name of the key we're adding
           {
             type: Sequelize.INTEGER,
             references: {
@@ -51,14 +51,14 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     return (
       queryInterface
-        .removeColumn("labels", "_Tasksid")
+        .removeColumn("labels", "tasksid")
         //undo invoices hasMany tasks
         .then(() => {
           return queryInterface.removeColumn("tasks", "invoiceId");
         })
         //undo tasks has many attachments
         .then(() => {
-          return queryInterface.removeColumn("attachments", "_Tasksid");
+          return queryInterface.removeColumn("attachments", "tasksid");
         })
     );
   },

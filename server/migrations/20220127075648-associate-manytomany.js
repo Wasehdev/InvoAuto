@@ -14,16 +14,23 @@ module.exports = {
         },
         membersid: {
           type: Sequelize.INTEGER,
-          primaryKey: true,
+          references: {
+            model: "members", // 'Movies' would also work
+            key: "id",
+          },
         },
-        _Taskd: {
+
+        tasksid: {
           type: Sequelize.INTEGER,
-          primaryKey: true,
+          references: {
+            model: "tasks", // 'Movies' would also work
+            key: "id",
+          },
         },
       })
       .then(() => {
         queryInterface.addIndex("membersdata", {
-          fields: ["membersid", "_Taskd"],
+          fields: ["membersid", "tasksid"],
           name: "members_data",
           unique: true,
         });
