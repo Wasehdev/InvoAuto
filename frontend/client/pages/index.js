@@ -38,7 +38,6 @@ export default function Home() {
         <Link href="/create">
           <button>Create</button>
         </Link>
-
         <div>
           <Table columns={columns} data={tasks} />
         </div>
