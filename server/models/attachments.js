@@ -21,6 +21,8 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "attachments",
     }
   );
-  attachments.belongsTo(models.tasks);
+  attachments.associate = (models) => {
+    attachments.belongsTo(models.tasks);
+  };
   return attachments;
 };
