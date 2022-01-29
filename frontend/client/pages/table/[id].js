@@ -1,12 +1,12 @@
-import axios from "axios";
-
 export const getStaticPaths = async () => {
-  const res = await axios.get("http:localhost:5000/tasks");
+  const res = await fetch("http://localhost:5000/tasks");
+  const data = await res.json();
 
-  // map data to an array of path objects with params (id)
-  const paths = res.data.map((ninja) => {
+  const paths = data.map((task) => {
     return {
-      params: { id: ninja.id.toString() },
+      params: {
+        id: task.id.toString(),
+      },
     };
   });
 
@@ -18,20 +18,29 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async (context) => {
   const id = context.params.id;
-  const res = await axios.get("http:localhost:5000/tasks" + id);
-  const data = res.data;
-  console.log(data);
+  const res = await fetch(`http://localhost:5000/tasks/${id}`);
+  const data = await res.json();
 
   return {
-    props: { task: data },
+    props: {
+      task: data,
+    },
   };
 };
 
 const Table = ({ task }) => {
+  const { task_name, description, invoiceId } = task.task;
+  const titles = task.label;
   return (
     <div>
-      <h1>{task.task_name}</h1>
-      <p>{task.description}</p>
+      <h1>{task_name}</h1>
+      <p>{description}</p>
+      <h1>Labels</h1>
+      <ul>
+        {titles.map((label) => {
+          return <li>{label.title}</li>;
+        })}
+      </ul>
     </div>
   );
 };

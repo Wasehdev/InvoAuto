@@ -70,9 +70,8 @@ app.get("/tasks/:id", async (req, res) => {
   let id = req.params.id;
   try {
     const task = await tasks.findOne({ where: { id } });
-    //const label = await labels.findAll({ where: { taskId: id } });
-
-    return res.json({ task });
+    const label = await labels.findAll({ where: { taskId: id } });
+    return res.json({ task, label });
   } catch (err) {
     return res.status(500).json({ error: "Something went wrong" });
   }

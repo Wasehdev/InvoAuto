@@ -1,5 +1,6 @@
 // import { Icon } from "@iconify/react";
-import { useState } from "react";
+import { getTasks } from "../api";
+import { useState, useEffect } from "react";
 // material
 import {
   Card,
@@ -20,37 +21,40 @@ import {
 import { UserMoreMenu, UserListHead } from "../user";
 
 const TABLE_HEAD = [
-  { id: "name", label: "Name", alignRight: false },
-  { id: "company", label: "Company", alignRight: false },
-  { id: "role", label: "Role", alignRight: false },
-  { id: "isVerified", label: "Verified", alignRight: false },
-  { id: "status", label: "Status", alignRight: false },
-  { id: "" },
+  { id: "task_name", label: "Task Name", alignRight: false },
+  { id: "description", label: "Description", alignRight: false },
+  { id: "invoiceId", label: "Invoice Id", alignRight: false },
+  { id: "estimated_hours", label: "Estimated Hours", alignRight: false },
+  { id: "actual_hours", label: "Actual Hours", alignRight: false },
 ];
 
-const USERLIST = [...Array(24)].map((_, index) => ({
-  id: 27,
-  avatarUrl: index + 1,
-  name: "Mudassar",
-  company: "Invoxone",
-  isVerified: index % 2 == 0 ? true : false,
-  status: index % 2 == 0 ? "active" : "banned",
-  role: "Leader",
-}));
-
 const MainTable = () => {
+  const [taskList, setTaskList] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
+  useEffect(() => {
+    let mounted = true;
+    getTasks()
+      .then((result) => {
+        if (mounted) {
+          let tasks = result.data;
+          setTaskList(tasks);
+        }
+      })
+      .catch((error) => console.log(error));
+    return () => (mounted = false);
+  }, []);
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - taskList.length) : 0;
 
   const filteredUsers = [];
 
@@ -62,39 +66,35 @@ const MainTable = () => {
         <Table>
           <UserListHead headLabel={TABLE_HEAD} />
           <TableBody>
-            {USERLIST.slice(
-              page * rowsPerPage,
-              page * rowsPerPage + rowsPerPage
-            ).map((row) => {
-              const {
-                id,
-                name,
-                role,
-                status,
-                company,
-                avatarUrl,
-                isVerified,
-              } = row;
-              return (
-                <TableRow hover key={id} tabIndex={-1}>
-                  <TableCell component="th" scope="row" padding="none">
-                    <Typography variant="subtitle2" noWrap>
-                      {name}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="left">{company}</TableCell>
-                  <TableCell align="left">{role}</TableCell>
-                  <TableCell align="left">
-                    {isVerified ? "Yes" : "No"}
-                  </TableCell>
-                  <TableCell align="left">{status}</TableCell>
+            {taskList
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row) => {
+                const {
+                  id,
+                  task_name,
+                  description,
+                  invoiceId,
+                  actual_hours,
+                  estimated_hours,
+                } = row;
+                return (
+                  <TableRow hover key={id} tabIndex={-1}>
+                    <TableCell component="th" scope="row" padding="none">
+                      <Typography variant="subtitle2" noWrap>
+                        {task_name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="left">{description}</TableCell>
+                    <TableCell align="left">{invoiceId}</TableCell>
 
-                  <TableCell align="right">
-                    <UserMoreMenu id={row.id} />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                    <TableCell align="left">{estimated_hours}</TableCell>
+                    <TableCell align="left">{actual_hours}</TableCell>
+                    <TableCell align="right">
+                      <UserMoreMenu id={id} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             {emptyRows > 0 && (
               <TableRow style={{ height: 53 * emptyRows }}>
                 <TableCell colSpan={6} />
@@ -107,7 +107,7 @@ const MainTable = () => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={USERLIST.length}
+        count={taskList.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
