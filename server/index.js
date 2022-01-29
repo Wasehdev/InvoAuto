@@ -66,6 +66,18 @@ app.get("/tasks", async (req, res) => {
   }
 });
 
+app.get("/tasks/:id", async (req, res) => {
+  let id = req.params.id;
+  try {
+    const task = await tasks.findOne({ where: { id } });
+    //const label = await labels.findAll({ where: { taskId: id } });
+
+    return res.json({ task });
+  } catch (err) {
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
 //update single task
 app.put("/tasks/:id", async (req, res) => {
   const id = req.params.id;
@@ -175,12 +187,12 @@ app.get("/labels", async (req, res) => {
 });
 //create single label
 app.post("/labels", async (req, res) => {
-  const { title, invoiceId } = req.body;
+  const { title, taskId } = req.body;
 
   try {
     const label = await labels.create({
-      description,
-      billable_hours,
+      title,
+      taskId,
     });
 
     return res.json(label);
