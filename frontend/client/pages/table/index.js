@@ -14,8 +14,10 @@ import {
   TableCell,
   Container,
   Typography,
+  Box,
   TableContainer,
   TablePagination,
+  Paper,
 } from "@mui/material";
 
 import { UserMoreMenu, UserListHead } from "../user";
@@ -61,59 +63,69 @@ const MainTable = () => {
   const isUserNotFound = filteredUsers.length === 0;
 
   return (
-    <Card>
-      <TableContainer sx={{ minWidth: 800 }}>
-        <Table>
-          <UserListHead headLabel={TABLE_HEAD} />
-          <TableBody>
-            {taskList
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                const {
-                  id,
-                  task_name,
-                  description,
-                  invoiceId,
-                  actual_hours,
-                  estimated_hours,
-                } = row;
-                return (
-                  <TableRow hover key={id} tabIndex={-1}>
-                    <TableCell component="th" scope="row" padding="none">
-                      <Typography variant="subtitle2" noWrap>
-                        {task_name}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="left">{description}</TableCell>
-                    <TableCell align="left">{invoiceId}</TableCell>
+    <Paper elevation={10} sx={{ m: 5 }}>
+      <Card>
+        <Button color="primary" variant="contained" sx={{ m: 2 }}>
+          Create
+        </Button>
+        <TableContainer sx={{ minWidth: 800 }}>
+          <Table>
+            <UserListHead headLabel={TABLE_HEAD} />
+            <TableBody>
+              {taskList
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => {
+                  const {
+                    id,
+                    task_name,
+                    description,
+                    invoiceId,
+                    actual_hours,
+                    estimated_hours,
+                  } = row;
+                  return (
+                    <TableRow hover key={id} tabIndex={-1}>
+                      <TableCell
+                        align="center"
+                        component="th"
+                        scope="row"
+                        padding="none"
+                      >
+                        <Typography variant="subtitle2" noWrap>
+                          {task_name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="left">{description}</TableCell>
+                      <TableCell align="left">{invoiceId}</TableCell>
 
-                    <TableCell align="left">{estimated_hours}</TableCell>
-                    <TableCell align="left">{actual_hours}</TableCell>
-                    <TableCell align="right">
-                      <UserMoreMenu id={id} />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            {emptyRows > 0 && (
-              <TableRow style={{ height: 53 * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                      <TableCell align="left">{estimated_hours}</TableCell>
+                      <TableCell align="left">{actual_hours}</TableCell>
+                      <TableCell align="right">
+                        <UserMoreMenu id={id} />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={taskList.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Card>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={taskList.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Card>
+    </Paper>
   );
 };
 

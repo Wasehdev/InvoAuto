@@ -41,6 +41,22 @@ const UserMoreMenu = ({ id }) => {
             />
           </MenuItem>
         </Link>
+        <Link href={"/table/" + id}>
+          <MenuItem sx={{ color: "text.secondary" }}>
+            <ListItemText
+              primary="Edit"
+              primaryTypographyProps={{ variant: "body2" }}
+            />
+          </MenuItem>
+        </Link>
+        <Link href={"/table/" + id}>
+          <MenuItem sx={{ color: "text.secondary" }}>
+            <ListItemText
+              primary="Delete"
+              primaryTypographyProps={{ variant: "body2" }}
+            />
+          </MenuItem>
+        </Link>
       </Menu>
     </>
   );

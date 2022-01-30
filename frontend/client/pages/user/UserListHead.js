@@ -20,7 +20,10 @@ const UserListHead = ({ headLabel }) => {
             key={headCell.id}
             align={headCell.alignRight ? "right" : "left"}
           >
-            <TableSortLabel hideSortIcon>{headCell.label}</TableSortLabel>
+            <TableSortLabel hideSortIcon sx={{ fontWeight: "bold" }}>
+              {" "}
+              {headCell.label}
+            </TableSortLabel>
           </TableCell>
         ))}
       </TableRow>
