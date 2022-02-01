@@ -20,7 +20,41 @@ import {
   Paper,
 } from "@mui/material";
 
-import { UserMoreMenu, UserListHead } from "../user";
+import UserListHead from "../user/UserListHead";
+import UserListToolBar from "../user/UserListToolBar";
+import UserMoreMenu from "../user/UserMoreMenu";
+
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+function getComparator(order, orderBy) {
+  return order === "desc"
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function applySortFilter(array, comparator, query) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  if (query) {
+    return filter(
+      array,
+      (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+    );
+  }
+  return stabilizedThis.map((el) => el[0]);
+}
 
 const TABLE_HEAD = [
   { id: "task_name", label: "Task Name", alignRight: false },
@@ -33,10 +67,68 @@ const TABLE_HEAD = [
 const MainTable = () => {
   const [taskList, setTaskList] = useState([]);
   const [page, setPage] = useState(0);
+  const [order, setOrder] = useState("asc");
+  const [selected, setSelected] = useState([]);
+  const [orderBy, setOrderBy] = useState("name");
+  const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = taskList.map((n) => n.name);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleClick = (event, name) => {
+    const selectedIndex = selected.indexOf(name);
+    let newSelected = [];
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, name);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+  };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleFilterByName = (event) => {
+    setFilterName(event.target.value);
+  };
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+
+  const filteredUsers = applySortFilter(
+    taskList,
+    getComparator(order, orderBy),
+    filterName
+  );
+
+  const isUserNotFound = filteredUsers.length === 0;
 
   useEffect(() => {
     let mounted = true;
@@ -51,28 +143,28 @@ const MainTable = () => {
     return () => (mounted = false);
   }, []);
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - taskList.length) : 0;
-
-  const filteredUsers = [];
-
-  const isUserNotFound = filteredUsers.length === 0;
-
   return (
     <Paper elevation={10} sx={{ m: 5 }}>
       <Card>
-        <Button color="primary" variant="contained" sx={{ m: 2 }}>
-          Create
-        </Button>
+        <UserListToolBar
+          numSelected={selected.length}
+          filterName={filterName}
+          onFilterName={handleFilterByName}
+        />
+
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
-            <UserListHead headLabel={TABLE_HEAD} />
+            <UserListHead
+              order={order}
+              orderBy={orderBy}
+              headLabel={TABLE_HEAD}
+              rowCount={taskList.length}
+              numSelected={selected.length}
+              onRequestSort={handleRequestSort}
+              onSelectAllClick={handleSelectAllClick}
+            />
             <TableBody>
-              {taskList
+              {filteredUsers
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   const {
@@ -83,8 +175,22 @@ const MainTable = () => {
                     actual_hours,
                     estimated_hours,
                   } = row;
+                  const isItemSelected = selected.indexOf(task_name) !== -1;
                   return (
-                    <TableRow hover key={id} tabIndex={-1}>
+                    <TableRow
+                      hover
+                      key={id}
+                      tabIndex={-1}
+                      role="checkbox"
+                      selected={isItemSelected}
+                      aria-checked={isItemSelected}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isItemSelected}
+                          onChange={(event) => handleClick(event, name)}
+                        />
+                      </TableCell>
                       <TableCell
                         align="center"
                         component="th"

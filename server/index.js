@@ -1,5 +1,10 @@
 const express = require("express");
 var cors = require("cors");
+const TaskController = require("./api/controller/taskController");
+const InvoiceController = require("./api/controller/invoiceController");
+const LabelController = require("./api/controller/labelController");
+const MemberController = require("./api/controller/memberController");
+
 const { sequelize, tasks, invoices, labels, members } = require("./models");
 const corsOptions = {
   origin: "*",
@@ -24,267 +29,49 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-//create new task and labels
+//create new tasks
 
-app.post("/tasks", async (req, res) => {
-  const { task_name, description, actual_hours, estimated_hours } = req.body;
-
-  let task_labels = req.body.labels;
-  task_labels = task_labels.replace(/\s/g, "");
-  let labelsArr = task_labels.split(",");
-  let invoiceId = Math.floor(Math.random() * (3 - 1) + 1);
-  try {
-    const user = await tasks
-      .create({
-        task_name,
-        description,
-        invoiceId,
-      })
-      .then((task) => {
-        for (let i = 0; i < labelsArr.length; i++) {
-          let title = labelsArr[i];
-          let taskId = task.id;
-          labels.create({ title, taskId });
-        }
-      });
-
-    return res.json(user);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-});
+app.post("/tasks", TaskController.create);
 
 //get all tasks
 
-app.get("/tasks", async (req, res) => {
-  try {
-    const task = await tasks.findAll();
-    return res.json(task);
-  } catch (err) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+app.get("/tasks", TaskController.index);
 
-app.get("/tasks/:id", async (req, res) => {
-  let id = req.params.id;
-  try {
-    const task = await tasks.findOne({ where: { id } });
-    const label = await labels.findAll({ where: { taskId: id } });
-    return res.json({ task, label });
-  } catch (err) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+app.get("/tasks/:id", TaskController.show);
 
 //update single task
-app.put("/tasks/:id", async (req, res) => {
-  const id = req.params.id;
-  const {
-    task_name,
-    description,
-    actual_hours,
-    estimated_hours,
-    invoiceId,
-  } = req.body;
-  let task_labels = req.body.labels;
-  task_labels = task_labels.replace(/\s/g, "");
-  let labelsArr = task_labels.split(",");
-  try {
-    const task = await tasks.findOne({ where: { id } });
-
-    task.task_name = task_name;
-    task.description = description;
-    task.actual_hours = actual_hours;
-    task.estimated_hours = estimated_hours;
-    task.invoiceId = invoiceId;
-
-    await task.save();
-
-    const label = await labels.findAll({
-      where: { taskId: id },
-    });
-    let labelIndexes = [];
-    for (let i = 0; i < label.length; i++) {
-      let value = label[i].id;
-      labelIndexes.push(value);
-    }
-    for (let i = 0; i < label.length; i++) {
-      let id = labelIndexes[i];
-      if (id) {
-        labelupdate = await labels.findOne({ where: { id } });
-        labelupdate.title = labelsArr[i];
-        await labelupdate.save();
-      }
-    }
-
-    res.json(labelupdate);
-
-    return res.json();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+app.put("/tasks/:id", TaskController.update);
 
 //delete single task
 
-app.delete("/tasks/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    labels.destroy({ where: { taskId: id } }).then(async () => {
-      tasks.destroy({ where: { id } }).then(() => {
-        console.log("deleted");
-      });
-    });
-    return res.json({});
-  } catch (err) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+app.delete("/tasks/:id", TaskController.delete);
 
 //get all invoices
 
-app.get("/invoices", async (req, res) => {
-  try {
-    const task = await invoices.findAll();
-
-    return res.json(task);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+app.get("/invoices", InvoiceController.index);
+app.get("/invoices/:id", InvoiceController.show);
 
 //create single invoice
-app.post("/invoices", async (req, res) => {
-  const { description, billable_hours } = req.body;
-
-  try {
-    const invoice = await invoices.create({
-      description,
-      billable_hours,
-    });
-
-    return res.json(invoice);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-});
+app.post("/invoices", InvoiceController.create);
 
 //get all labels
 
-app.get("/labels", async (req, res) => {
-  try {
-    const task = await labels.findAll();
-    return res.json(task);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+app.get("/labels", LabelController.index);
 //create single label
-app.post("/labels", async (req, res) => {
-  const { title, taskId } = req.body;
-
-  try {
-    const label = await labels.create({
-      title,
-      taskId,
-    });
-
-    return res.json(label);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-});
+app.post("/labels", LabelController.create);
 //update single label
-app.put("/labels/:id", async (req, res) => {
-  let id = req.params.id;
-  const { title, invoiceId } = req.body;
-
-  try {
-    const label = await labels.findOne({ where: { id } });
-
-    label.title = title;
-    label.invoiceId = invoiceId;
-
-    await label.save();
-
-    return res.json(label);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-});
+app.put("/labels/:id", LabelController.update);
 //delete single label
-app.delete("/labels/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    labels.destroy({ where: { id } }).then(async () => {
-      console.log("deleted");
-      return res.json({});
-    });
-  } catch (err) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+app.delete("/labels/:id", LabelController.delete);
 
 //get all members
-app.get("/members", async (req, res) => {
-  try {
-    const member = await members.findAll();
-    return res.json(member);
-  } catch (err) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
-//create single label
-app.post("/members", async (req, res) => {
-  const { name } = req.body;
-
-  try {
-    const member = await members.create({
-      name,
-    });
-
-    return res.json(member);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-});
-//update single label
-app.put("/members/:id", async (req, res) => {
-  let id = req.params.id;
-  const { name } = req.body;
-
-  try {
-    const member = await members.findOne({ where: { id } });
-
-    member.name = name;
-    await member.save();
-
-    return res.json(member);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-});
-//delete single label
-app.delete("/members/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    members.destroy({ where: { id } }).then(async () => {
-      console.log("deleted");
-      return res.json({});
-    });
-  } catch (err) {
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+app.get("/members", MemberController.index);
+//create single member
+app.post("/members", MemberController.create);
+//update single member
+app.put("/members/:id", MemberController.update);
+//delete single member
+app.delete("/members/:id", MemberController.delete);
 
 // app.get("/:id", async (req, res) => {
 //   let id = req.params.id;
@@ -405,7 +192,7 @@ app.delete("/members/:id", async (req, res) => {
 // });
 
 app.listen({ port: 5000 }, async () => {
-  console.log("Server up on http://localhost:3000");
+  console.log("Server up on http://localhost:5000");
   await sequelize.authenticate();
   console.log("Database Connected!");
 });
