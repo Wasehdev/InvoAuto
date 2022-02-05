@@ -8,8 +8,8 @@ const {
 
 exports.index = async (req, res) => {
   try {
-    const task = await members.findAll();
-    return res.json(task);
+    const member = await members.findAll();
+    return res.json(member);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Something went wrong" });
@@ -19,12 +19,11 @@ exports.index = async (req, res) => {
 exports.show = {};
 
 exports.create = async (req, res) => {
-  const { title, taskId } = req.body;
+  const { name } = req.body;
 
   try {
     const member = await members.create({
-      title,
-      taskId,
+      name,
     });
 
     return res.json(member);
@@ -36,14 +35,11 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   let id = req.params.id;
-  const { title, invoiceId } = req.body;
+  const { name } = req.body;
 
   try {
     const member = await members.findOne({ where: { id } });
-
-    member.title = title;
-    member.invoiceId = invoiceId;
-
+    member.name = name;
     await member.save();
 
     return res.json(member);

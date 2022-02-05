@@ -1,10 +1,4 @@
-const {
-  sequelize,
-  tasks,
-  invoices,
-  labels,
-  members,
-} = require("../../../models");
+const { tasks, labels } = require("../../../models");
 
 exports.index = async (req, res) => {
   try {
@@ -30,6 +24,7 @@ exports.create = async (req, res) => {
   const { task_name, description, actual_hours, estimated_hours } = req.body;
 
   let task_labels = req.body.labels;
+
   task_labels = task_labels.replace(/\s/g, "");
   let labelsArr = task_labels.split(",");
   let invoiceId = Math.floor(Math.random() * (3 - 1) + 1);
@@ -40,11 +35,11 @@ exports.create = async (req, res) => {
         description,
         invoiceId,
       })
-      .then((task) => {
+      .then(async (task) => {
         for (let i = 0; i < labelsArr.length; i++) {
           let title = labelsArr[i];
           let taskId = task.id;
-          labels.create({ title, taskId });
+          await labels.create({ title, taskId });
         }
       });
 
@@ -108,6 +103,36 @@ exports.delete = async (req, res) => {
       });
     });
     return res.json({});
+  } catch (err) {
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+exports.showById = async (req, res) => {
+  let id = req.params.value;
+  try {
+    const task = await tasks.findAll({ where: { id } });
+    return res.json(task);
+  } catch (err) {
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+exports.showByTaskName = async (req, res) => {
+  let task_name = req.params.value;
+  try {
+    const task = await tasks.findAll({ where: { task_name } });
+    return res.json(task);
+  } catch (err) {
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+exports.showByInvoiceId = async (req, res) => {
+  let invoiceId = req.params.value;
+  try {
+    const task = await tasks.findAll({ where: { invoiceId } });
+    return res.json(task);
   } catch (err) {
     return res.status(500).json({ error: "Something went wrong" });
   }

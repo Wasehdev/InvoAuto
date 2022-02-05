@@ -1,4 +1,3 @@
-import { Icon } from "@iconify/react";
 import { useRef, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Link from "next/link";
@@ -13,7 +12,7 @@ import {
 
 // ----------------------------------------------------------------------
 
-const UserMoreMenu = ({ id }) => {
+const TableMoreMenu = ({ id, handleDelete }) => {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -33,7 +32,7 @@ const UserMoreMenu = ({ id }) => {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Link href={"/table/" + id}>
+        <Link href={"/task/" + id}>
           <MenuItem sx={{ color: "text.secondary" }}>
             <ListItemText
               primary="View Details"
@@ -41,25 +40,19 @@ const UserMoreMenu = ({ id }) => {
             />
           </MenuItem>
         </Link>
-        <Link href={"/table/" + id}>
-          <MenuItem sx={{ color: "text.secondary" }}>
-            <ListItemText
-              primary="Edit"
-              primaryTypographyProps={{ variant: "body2" }}
-            />
-          </MenuItem>
-        </Link>
-        <Link href={"/table/" + id}>
-          <MenuItem sx={{ color: "text.secondary" }}>
-            <ListItemText
-              primary="Delete"
-              primaryTypographyProps={{ variant: "body2" }}
-            />
-          </MenuItem>
-        </Link>
+
+        <MenuItem
+          sx={{ color: "text.secondary" }}
+          onClick={() => handleDelete(id)}
+        >
+          <ListItemText
+            primary="Delete"
+            primaryTypographyProps={{ variant: "body2" }}
+          />
+        </MenuItem>
       </Menu>
     </>
   );
 };
 
-export default UserMoreMenu;
+export default TableMoreMenu;
