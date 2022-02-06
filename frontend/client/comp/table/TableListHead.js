@@ -7,8 +7,8 @@ const TableListHead = ({ headLabel }) => {
     <TableHead>
       <TableRow>
         {headLabel.map((headCell) => (
-          <TableCell key={headCell.id}>
-            <TableSortLabel>{headCell.label}</TableSortLabel>
+          <TableCell key={headCell.id} sx={{ fontWeight: 700 }}>
+            {headCell.label}
           </TableCell>
         ))}
       </TableRow>

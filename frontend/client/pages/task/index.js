@@ -5,16 +5,10 @@ import { useState, useEffect } from "react";
 import {
   Card,
   Table,
-  Stack,
-  Avatar,
-  Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
-  Container,
   Typography,
-  Box,
   TableContainer,
   TablePagination,
   Paper,
@@ -83,6 +77,7 @@ const MainTable = () => {
       .then((result) => {
         if (mounted) {
           let tasks = result.data;
+          console.log(tasks);
           setTaskList(tasks);
         }
       })
@@ -94,7 +89,6 @@ const MainTable = () => {
     <Paper elevation={10} sx={{ m: 5 }}>
       <Card>
         <TableListToolBar handleSearch={handleSearch} />
-
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
             <TableListHead headLabel={TABLE_HEAD} rowCount={taskList.length} />
@@ -112,7 +106,7 @@ const MainTable = () => {
                   } = row;
 
                   return (
-                    <TableRow hover key={id} tabIndex={-1} role="checkbox">
+                    <TableRow hover key={id}>
                       <TableCell
                         align="center"
                         component="th"
@@ -128,7 +122,7 @@ const MainTable = () => {
 
                       <TableCell align="left">{estimated_hours}</TableCell>
                       <TableCell align="left">{actual_hours}</TableCell>
-                      <TableCell align="right">
+                      <TableCell align="left">
                         <TableMoreMenu id={id} handleDelete={handleDelete} />
                       </TableCell>
                     </TableRow>

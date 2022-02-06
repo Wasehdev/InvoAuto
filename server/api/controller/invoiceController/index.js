@@ -1,10 +1,4 @@
-const {
-  sequelize,
-  tasks,
-  invoices,
-  labels,
-  members,
-} = require("../../../models");
+const { tasks, invoices } = require("../../../models");
 
 exports.index = async (req, res) => {
   try {

@@ -1,6 +1,6 @@
 const { tasks, labels } = require("../../../models");
 
-exports.index = async (req, res) => {
+exports.index = async (res) => {
   try {
     const task = await tasks.findAll();
     return res.json(task);
@@ -21,7 +21,7 @@ exports.show = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { task_name, description, actual_hours, estimated_hours } = req.body;
+  const { task_name, description } = req.body;
 
   let task_labels = req.body.labels;
 

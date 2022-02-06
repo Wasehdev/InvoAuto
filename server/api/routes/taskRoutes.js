@@ -5,7 +5,9 @@ const TaskController = require("../controller/taskController");
 router.post("/", TaskController.create);
 //get all
 router.get("/", TaskController.index);
+//get one task
 router.get("/:id", TaskController.show);
+//filtering
 router.get("/id/:value", TaskController.showById);
 router.get("/invoiceId/:value", TaskController.showByInvoiceId);
 router.get("/task_name/:value", TaskController.showByTaskName);

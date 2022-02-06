@@ -1,14 +1,24 @@
 const express = require("express");
+require("dotenv").config();
 var cors = require("cors");
-const Sequelize = require("sequelize");
+const { Sequelize } = require("sequelize");
 const taskRoutes = require("./api/routes/taskRoutes");
 const labelRoutes = require("./api/routes/labelRoutes");
 const memberRoutes = require("./api/routes/memberRoutes");
 const invoiceRoutes = require("./api/routes/invoiceRoutes");
-const sequelize = new Sequelize("invoauto", "postgres", "waseh8348", {
-  host: "localhost",
-  dialect: "postgres",
-});
+// const database = process.env.DATABASE;
+// const username = process.env.USERNAME;
+// const password = process.env.PASSWORD;
+
+const sequelize = new Sequelize(
+  process.env.DB_DATABASE,
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+  }
+);
 const corsOptions = {
   origin: "*",
   credentials: true,
@@ -42,11 +52,10 @@ app.use("/labels", labelRoutes);
 app.use("/members", memberRoutes);
 
 app.listen({ port: 5000 }, async () => {
-  console.log("Server up on http://localhost:5000");
-  try {
-    await sequelize.authenticate();
-  } catch {
-    console.log("db not connected");
-  }
-  console.log("Database Connected!");
+  console.log(`Server up on http://localhost:${5000}`);
+
+  sequelize
+    .authenticate()
+    .then(console.log("connected"))
+    .catch((err) => console.log(err));
 });
