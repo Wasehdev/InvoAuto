@@ -1,8 +1,8 @@
-const { labels } = require("../../../models");
+const { Label } = require("../../../models");
 
 exports.index = async (req, res) => {
   try {
-    const task = await labels.findAll();
+    const task = await Label.findAll();
     return res.json(task);
   } catch (err) {
     console.log(err);
@@ -16,7 +16,7 @@ exports.create = async (req, res) => {
   const { title, taskId } = req.body;
 
   try {
-    const label = await labels.create({
+    const label = await Label.create({
       title,
       taskId,
     });
@@ -33,7 +33,7 @@ exports.update = async (req, res) => {
   const { title, invoiceId } = req.body;
 
   try {
-    const label = await labels.findOne({ where: { id } });
+    const label = await Label.findOne({ where: { id } });
 
     label.title = title;
     label.invoiceId = invoiceId;
@@ -50,7 +50,7 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   const id = req.params.id;
   try {
-    labels.destroy({ where: { id } }).then(async () => {
+    Label.destroy({ where: { id } }).then(async () => {
       console.log("deleted");
       return res.json({});
     });

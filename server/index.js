@@ -4,8 +4,8 @@ var cors = require("cors");
 const { Sequelize } = require("sequelize");
 const taskRoutes = require("./api/routes/taskRoutes");
 const labelRoutes = require("./api/routes/labelRoutes");
-const memberRoutes = require("./api/routes/memberRoutes");
-const invoiceRoutes = require("./api/routes/invoiceRoutes");
+// const memberRoutes = require("./api/routes/memberRoutes");
+// const invoiceRoutes = require("./api/routes/invoiceRoutes");
 // const database = process.env.DATABASE;
 // const username = process.env.USERNAME;
 // const password = process.env.PASSWORD;
@@ -45,11 +45,11 @@ app.use(express.json());
 //tasks
 app.use("/tasks", taskRoutes);
 //invoices
-app.use("/invoices", invoiceRoutes);
+// app.use("/invoices", invoiceRoutes);
 //labels
 app.use("/labels", labelRoutes);
 //members
-app.use("/members", memberRoutes);
+// app.use("/members", memberRoutes);
 
 app.listen({ port: 5000 }, async () => {
   console.log(`Server up on http://localhost:${5000}`);

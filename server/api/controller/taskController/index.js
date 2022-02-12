@@ -1,8 +1,8 @@
-const { tasks, labels } = require("../../../models");
+const { Task, Label } = require("../../../models");
 
-exports.index = async (res) => {
+exports.index = async (req, res) => {
   try {
-    const task = await tasks.findAll();
+    const task = await Task.findAll();
     return res.json(task);
   } catch (err) {
     return res.status(500).json({ error: "Something went wrong" });
@@ -12,8 +12,8 @@ exports.index = async (res) => {
 exports.show = async (req, res) => {
   let id = req.params.id;
   try {
-    const task = await tasks.findOne({ where: { id } });
-    const label = await labels.findAll({ where: { taskId: id } });
+    const task = await Task.findOne({ where: { id } });
+    const label = await Label.findAll({ where: { tasksid: id } });
     return res.json({ task, label });
   } catch (err) {
     return res.status(500).json({ error: "Something went wrong" });
@@ -29,19 +29,17 @@ exports.create = async (req, res) => {
   let labelsArr = task_labels.split(",");
   let invoiceId = Math.floor(Math.random() * (3 - 1) + 1);
   try {
-    const user = await tasks
-      .create({
-        task_name,
-        description,
-        invoiceId,
-      })
-      .then(async (task) => {
-        for (let i = 0; i < labelsArr.length; i++) {
-          let title = labelsArr[i];
-          let taskId = task.id;
-          await labels.create({ title, taskId });
-        }
-      });
+    const user = await Task.create({
+      task_name,
+      description,
+      invoiceId,
+    }).then(async (task) => {
+      for (let i = 0; i < labelsArr.length; i++) {
+        let title = labelsArr[i];
+        let tasksid = task.id;
+        await Label.create({ title, tasksid });
+      }
+    });
 
     return res.json(user);
   } catch (err) {
@@ -52,13 +50,18 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   const id = req.params.id;
-  const { task_name, description, actual_hours, estimated_hours, invoiceId } =
-    req.body;
+  const {
+    task_name,
+    description,
+    actual_hours,
+    estimated_hours,
+    invoiceId,
+  } = req.body;
   let task_labels = req.body.labels;
   task_labels = task_labels.replace(/\s/g, "");
   let labelsArr = task_labels.split(",");
   try {
-    const task = await tasks.findOne({ where: { id } });
+    const task = await Task.findOne({ where: { id } });
 
     task.task_name = task_name;
     task.description = description;
@@ -68,8 +71,8 @@ exports.update = async (req, res) => {
 
     await task.save();
 
-    const label = await labels.findAll({
-      where: { taskId: id },
+    const label = await Label.findAll({
+      where: { tasksid: id },
     });
     let labelIndexes = [];
     for (let i = 0; i < label.length; i++) {
@@ -79,7 +82,7 @@ exports.update = async (req, res) => {
     for (let i = 0; i < label.length; i++) {
       let id = labelIndexes[i];
       if (id) {
-        labelupdate = await labels.findOne({ where: { id } });
+        labelupdate = await Label.findOne({ where: { id } });
         labelupdate.title = labelsArr[i];
         await labelupdate.save();
       }
@@ -97,8 +100,8 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   const id = req.params.id;
   try {
-    labels.destroy({ where: { taskId: id } }).then(async () => {
-      tasks.destroy({ where: { id } }).then(() => {
+    Label.destroy({ where: { tasksid: id } }).then(async () => {
+      Task.destroy({ where: { id } }).then(() => {
         console.log("deleted");
       });
     });
@@ -111,7 +114,7 @@ exports.delete = async (req, res) => {
 exports.showById = async (req, res) => {
   let id = req.params.value;
   try {
-    const task = await tasks.findAll({ where: { id } });
+    const task = await Task.findAll({ where: { id } });
     return res.json(task);
   } catch (err) {
     return res.status(500).json({ error: "Something went wrong" });
@@ -121,7 +124,7 @@ exports.showById = async (req, res) => {
 exports.showByTaskName = async (req, res) => {
   let task_name = req.params.value;
   try {
-    const task = await tasks.findAll({ where: { task_name } });
+    const task = await Task.findAll({ where: { task_name } });
     return res.json(task);
   } catch (err) {
     return res.status(500).json({ error: "Something went wrong" });
@@ -131,7 +134,7 @@ exports.showByTaskName = async (req, res) => {
 exports.showByInvoiceId = async (req, res) => {
   let invoiceId = req.params.value;
   try {
-    const task = await tasks.findAll({ where: { invoiceId } });
+    const task = await Task.findAll({ where: { invoiceId } });
     return res.json(task);
   } catch (err) {
     return res.status(500).json({ error: "Something went wrong" });

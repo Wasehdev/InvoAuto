@@ -8,11 +8,11 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      description: {
-        type: Sequelize.TEXT,
-      },
       task_name: {
         type: Sequelize.STRING,
+      },
+      description: {
+        type: Sequelize.TEXT,
       },
       actual_hours: {
         type: Sequelize.DOUBLE,

@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "postgres",
-    "password": "waseh8",
-    "database": "invoauto",
+    "password": "alliswell",
+    "database": "Invoauto",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
