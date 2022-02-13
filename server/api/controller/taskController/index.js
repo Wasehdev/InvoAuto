@@ -1,11 +1,11 @@
 const { tasks, labels } = require("../../../models");
 
-exports.index = async (res) => {
+exports.index = async (req, res) => {
   try {
     const task = await tasks.findAll();
     return res.json(task);
   } catch (err) {
-    return res.status(500).json({ error: "Something went wrong" });
+    return res.send("error");
   }
 };
 
@@ -85,9 +85,7 @@ exports.update = async (req, res) => {
       }
     }
 
-    res.json(labelupdate);
-
-    return res.json();
+    return res.json(task);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Something went wrong" });

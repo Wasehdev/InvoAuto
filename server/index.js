@@ -6,9 +6,6 @@ const taskRoutes = require("./api/routes/taskRoutes");
 const labelRoutes = require("./api/routes/labelRoutes");
 const memberRoutes = require("./api/routes/memberRoutes");
 const invoiceRoutes = require("./api/routes/invoiceRoutes");
-// const database = process.env.DATABASE;
-// const username = process.env.USERNAME;
-// const password = process.env.PASSWORD;
 
 const sequelize = new Sequelize(
   process.env.DB_DATABASE,
