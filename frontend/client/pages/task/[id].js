@@ -69,7 +69,7 @@ const Table = ({ task }) => {
   const handleAdd = () => {
     let newLabelsArr = [...labelsArr, labelVal];
     setLabelsArr(newLabelsArr);
-    let newLabel = { title: labelVal, taskId: task.task.id };
+    let newLabel = { title: labelVal, tasksid: task.task.id };
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },

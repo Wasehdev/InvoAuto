@@ -13,12 +13,12 @@ exports.index = async (req, res) => {
 exports.show = {};
 
 exports.create = async (req, res) => {
-  const { title, taskId } = req.body;
+  const { title, tasksid } = req.body;
 
   try {
     const label = await Label.create({
       title,
-      taskId,
+      tasksid,
     });
 
     return res.json(label);

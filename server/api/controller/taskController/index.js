@@ -21,13 +21,13 @@ exports.show = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { task_name, description } = req.body;
+  const { task_name, description, invoiceId } = req.body;
 
   let task_labels = req.body.labels;
 
   task_labels = task_labels.replace(/\s/g, "");
   let labelsArr = task_labels.split(",");
-  let invoiceId = Math.floor(Math.random() * (3 - 1) + 1);
+  // let invoiceId = Math.floor(Math.random() * (3 - 1) + 1);
   try {
     const user = await Task.create({
       task_name,

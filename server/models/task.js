@@ -2,14 +2,13 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Task extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate({ Label }) {
-      // define association here
+    static associate({ Label, Attachment, Invoice, Member }) {
       this.hasMany(Label, { foreignKey: "tasksid" });
+      this.hasMany(Attachment, { foreignKey: "tasksid" });
+      this.belongsTo(Invoice, {
+        foreignKey: "invoiceId",
+      });
+      this.belongsToMany(Member, { through: "membersdata" });
     }
   }
   Task.init(
@@ -18,8 +17,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notNull: { msg: "Task Name must have name" },
-          notEmpty: { msg: "Task Name cannot be empty" },
+          notNull: { msg: "Task must have name" },
+          notEmpty: { msg: "Task cannot be empty" },
         },
       },
       description: {

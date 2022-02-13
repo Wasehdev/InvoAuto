@@ -3,7 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.addColumn(
-      "labels", // name of Source table
+      "attachments", // name of Source table
       "tasksid", // name of the key we're adding
       {
         type: Sequelize.INTEGER,
@@ -18,9 +18,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    return queryInterface.removeColumn(
-      "labels", // name of Source table
-      "tasksid" // key we want to remove
-    );
+    return queryInterface.removeColumn("attachments", "tasksid");
   },
 };

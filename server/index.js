@@ -4,11 +4,8 @@ var cors = require("cors");
 const { Sequelize } = require("sequelize");
 const taskRoutes = require("./api/routes/taskRoutes");
 const labelRoutes = require("./api/routes/labelRoutes");
-// const memberRoutes = require("./api/routes/memberRoutes");
-// const invoiceRoutes = require("./api/routes/invoiceRoutes");
-// const database = process.env.DATABASE;
-// const username = process.env.USERNAME;
-// const password = process.env.PASSWORD;
+const memberRoutes = require("./api/routes/memberRoutes");
+const invoiceRoutes = require("./api/routes/invoiceRoutes");
 
 const sequelize = new Sequelize(
   process.env.DB_DATABASE,
@@ -30,10 +27,6 @@ const app = express();
 //middlewares
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With,Content-Type, Accept, Authorization"
-  );
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "PUT, GET, POST, PATCH, DELETE");
     res.status(200).json({});
@@ -45,11 +38,11 @@ app.use(express.json());
 //tasks
 app.use("/tasks", taskRoutes);
 //invoices
-// app.use("/invoices", invoiceRoutes);
+app.use("/invoices", invoiceRoutes);
 //labels
 app.use("/labels", labelRoutes);
 //members
-// app.use("/members", memberRoutes);
+app.use("/members", memberRoutes);
 
 app.listen({ port: 5000 }, async () => {
   console.log(`Server up on http://localhost:${5000}`);

@@ -1,8 +1,8 @@
-const { members } = require("../../../models");
+const { Member } = require("../../../models");
 
 exports.index = async (req, res) => {
   try {
-    const member = await members.findAll();
+    const member = await Member.findAll();
     return res.json(member);
   } catch (err) {
     console.log(err);
@@ -16,7 +16,7 @@ exports.create = async (req, res) => {
   const { name } = req.body;
 
   try {
-    const member = await members.create({
+    const member = await Member.create({
       name,
     });
 
@@ -32,7 +32,7 @@ exports.update = async (req, res) => {
   const { name } = req.body;
 
   try {
-    const member = await members.findOne({ where: { id } });
+    const member = await Member.findOne({ where: { id } });
     member.name = name;
     await member.save();
 
@@ -46,7 +46,7 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   const id = req.params.id;
   try {
-    members.destroy({ where: { id } }).then(async () => {
+    Member.destroy({ where: { id } }).then(async () => {
       console.log("deleted");
       return res.json({});
     });
