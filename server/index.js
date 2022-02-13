@@ -27,10 +27,6 @@ const app = express();
 //middlewares
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With,Content-Type, Accept, Authorization"
-  );
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "PUT, GET, POST, PATCH, DELETE");
     res.status(200).json({});
